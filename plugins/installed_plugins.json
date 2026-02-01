@@ -1,0 +1,85 @@
+{
+  "version": 2,
+  "plugins": {
+    "context7@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/context7/27d2b86d72da",
+        "version": "27d2b86d72da",
+        "installedAt": "2026-02-01T10:30:48.177Z",
+        "lastUpdated": "2026-02-01T10:30:48.177Z",
+        "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
+      }
+    ],
+    "frontend-design@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/frontend-design/27d2b86d72da",
+        "version": "27d2b86d72da",
+        "installedAt": "2026-02-01T10:31:01.711Z",
+        "lastUpdated": "2026-02-01T10:31:01.711Z",
+        "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
+      }
+    ],
+    "ralph-loop@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/ralph-loop/27d2b86d72da",
+        "version": "27d2b86d72da",
+        "installedAt": "2026-02-01T10:31:13.703Z",
+        "lastUpdated": "2026-02-01T10:31:13.703Z",
+        "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
+      }
+    ],
+    "typescript-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/typescript-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-02-01T10:31:18.731Z",
+        "lastUpdated": "2026-02-01T10:31:18.731Z",
+        "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
+      }
+    ],
+    "serena@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/serena/27d2b86d72da",
+        "version": "27d2b86d72da",
+        "installedAt": "2026-02-01T10:31:39.662Z",
+        "lastUpdated": "2026-02-01T10:31:39.662Z",
+        "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
+      }
+    ],
+    "playwright@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/playwright/27d2b86d72da",
+        "version": "27d2b86d72da",
+        "installedAt": "2026-02-01T10:31:44.769Z",
+        "lastUpdated": "2026-02-01T10:31:44.769Z",
+        "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
+      }
+    ],
+    "superpowers@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/claude-plugins-official/superpowers/4.1.1",
+        "version": "4.1.1",
+        "installedAt": "2026-02-01T10:31:55.093Z",
+        "lastUpdated": "2026-02-01T10:31:55.093Z",
+        "gitCommitSha": "06b92f36820f38175b2ed6ff3f8df45157d54731"
+      }
+    ],
+    "document-skills@anthropic-agent-skills": [
+      {
+        "scope": "user",
+        "installPath": "/Users/zhangjiarui/.claude/plugins/cache/anthropic-agent-skills/document-skills/69c0b1a06741",
+        "version": "69c0b1a06741",
+        "installedAt": "2026-02-01T10:32:52.007Z",
+        "lastUpdated": "2026-02-01T10:32:52.007Z",
+        "gitCommitSha": "69c0b1a0674149f27b61b2635f935524b6add202"
+      }
+    ]
+  }
+}
