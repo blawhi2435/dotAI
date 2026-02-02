@@ -1,3 +1,5 @@
 .claude
 .opencode
 openspec
+plugins/marketplaces/
+plugins/cache/
