@@ -31,7 +31,6 @@ CLAUDE_DIR="${DOTAI_CLAUDE_DIR:-$HOME/.claude}"
 # ---------------------------------------------------------------------------
 MANAGED_DIRS=("skills" "commands" "hooks" "rules")
 MANAGED_FILES=("settings.json")
-PLUGIN_STATE_DIRS=("cache" "marketplaces")
 PLUGIN_STATE_FILES=("installed_plugins.json" "known_marketplaces.json")
 
 # ---------------------------------------------------------------------------
@@ -251,15 +250,6 @@ mkdir -p "$PLUGIN_TGT"
 echo ""
 echo "Plugin state:"
 
-# --- Plugin state directories ---
-for item in "${PLUGIN_STATE_DIRS[@]}"; do
-    if [ "$STRATEGY" = "overwrite" ]; then
-        sync_directory_overwrite "$PLUGIN_SRC/$item" "$PLUGIN_TGT/$item"
-    else
-        sync_directory_merge "$PLUGIN_SRC/$item" "$PLUGIN_TGT/$item"
-    fi
-done
-
 # --- Plugin state files ---
 for item in "${PLUGIN_STATE_FILES[@]}"; do
     src_path="$PLUGIN_SRC/$item"
@@ -300,6 +290,21 @@ if [ "$DIRECTION" = "to" ]; then
             while IFS= read -r plugin; do
                 echo "  /plugin install $plugin"
             done <<< "$plugins"
+            echo ""
+        fi
+    fi
+
+    # Marketplace update prompt
+    KNOWN_MARKETPLACES="$REPO_DIR/plugins/known_marketplaces.json"
+    if [ -f "$KNOWN_MARKETPLACES" ]; then
+        # Check if file has any marketplace entries (not empty object)
+        has_marketplaces=$(python3 -c "import json; print(len(json.load(open('$KNOWN_MARKETPLACES'))) > 0)" 2>/dev/null) || true
+        if [ "$has_marketplaces" = "True" ]; then
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "Marketplace setup — run this command inside Claude Code:"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "  /plugin marketplace update"
             echo ""
         fi
     fi
