@@ -26,6 +26,10 @@ _resolved_repo="$(cd "$(dirname "$_script")" && pwd)"
 REPO_DIR="${DOTAI_REPO_DIR:-$_resolved_repo}"
 CLAUDE_DIR="${DOTAI_CLAUDE_DIR:-$HOME/.claude}"
 
+# Backup directory with date
+BACKUP_DATE="$(date +%Y-%m-%d)"
+BACKUP_DIR="$REPO_DIR/.dotai.back/$BACKUP_DATE"
+
 # ---------------------------------------------------------------------------
 # Managed items
 # ---------------------------------------------------------------------------
@@ -79,16 +83,46 @@ fi
 # Utility functions
 # ---------------------------------------------------------------------------
 
-# backup_target <path>
-# Moves <path> to <path>.bak. Overwrites previous .bak if present.
+# ensure_gitignore_entry
+# Ensures .dotai.back/ is in .gitignore. Creates .gitignore if it doesn't exist.
+ensure_gitignore_entry() {
+    local gitignore="$REPO_DIR/.gitignore"
+    local entry=".dotai.back/"
+
+    if [ ! -f "$gitignore" ]; then
+        echo "$entry" > "$gitignore"
+        return
+    fi
+
+    if ! grep -qxF "$entry" "$gitignore"; then
+        echo "$entry" >> "$gitignore"
+    fi
+}
+
+# backup_target <path> <relative_path>
+# Copies <path> to $BACKUP_DIR/<relative_path>.bak. Overwrites previous backup if present.
+# <relative_path> preserves directory structure (e.g., "plugins/installed_plugins.json")
 backup_target() {
     local tgt="$1"
-    local bak="${tgt}.bak"
+    local rel_path="$2"
+    local bak="$BACKUP_DIR/${rel_path}.bak"
+    local bak_dir
+    bak_dir="$(dirname "$bak")"
+
+    # Ensure .gitignore has .dotai.back/ entry
+    ensure_gitignore_entry
+
+    # Create backup directory structure
+    mkdir -p "$bak_dir"
+
+    # Remove existing backup if present
     if [ -e "$bak" ] || [ -L "$bak" ]; then
         rm -rf "$bak"
     fi
-    mv "$tgt" "$bak"
-    echo "  ↳ backed up to $(basename "$bak")"
+
+    # Copy to backup location (use cp to avoid cross-device issues)
+    cp -R "$tgt" "$bak"
+    echo "  ↳ backed up to .dotai.back/$BACKUP_DATE/${rel_path}.bak"
 }
 
 # is_legacy_symlink <path>
@@ -104,10 +138,11 @@ is_legacy_symlink() {
     return 1
 }
 
-# sync_directory_overwrite <src> <tgt>
+# sync_directory_overwrite <src> <tgt> <rel_path>
 # Backs up tgt, then makes tgt an exact copy of src.
+# <rel_path> is the relative path for backup (e.g., "skills" or "plugins/cache")
 sync_directory_overwrite() {
-    local src="$1" tgt="$2" name
+    local src="$1" tgt="$2" rel_path="$3" name
     name="$(basename "$tgt")"
 
     if [ ! -d "$src" ]; then
@@ -119,7 +154,7 @@ sync_directory_overwrite() {
         rm -f "$tgt"
         echo "  ↳ removed legacy symlink"
     elif [ -e "$tgt" ] || [ -L "$tgt" ]; then
-        backup_target "$tgt"
+        backup_target "$tgt" "$rel_path"
     fi
 
     mkdir -p "$tgt"
@@ -196,6 +231,138 @@ PYTHON
     echo "  ✓ $name (merged)"
 }
 
+# parameterize_plugin_paths <src> <tgt> <claude_dir>
+# Copies JSON from src to tgt, replacing $claude_dir paths with $CLAUDE_HOME
+parameterize_plugin_paths() {
+    local src="$1" tgt="$2" claude_dir="$3" name
+    name="$(basename "$tgt")"
+
+    if [ ! -f "$src" ]; then
+        echo "  ⊘ $name — source missing, skipped"
+        return
+    fi
+
+    if ! command -v python3 &>/dev/null; then
+        echo "  ✗ $name — python3 required but not found"
+        exit 1
+    fi
+
+    python3 - "$src" "$tgt" "$claude_dir" <<'PYTHON'
+import json, sys
+
+src_path, tgt_path, claude_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+
+with open(src_path) as f:
+    content = f.read()
+
+# Replace absolute claude_dir paths with $CLAUDE_HOME
+content = content.replace(claude_dir, '$CLAUDE_HOME')
+
+with open(tgt_path, 'w') as f:
+    f.write(content)
+PYTHON
+    echo "  ✓ $name (paths parameterized)"
+}
+
+# expand_plugin_paths <src> <tgt> <claude_dir>
+# Copies JSON from src to tgt, replacing $CLAUDE_HOME with $claude_dir
+expand_plugin_paths() {
+    local src="$1" tgt="$2" claude_dir="$3" name
+    name="$(basename "$tgt")"
+
+    if [ ! -f "$src" ]; then
+        echo "  ⊘ $name — source missing, skipped"
+        return
+    fi
+
+    if ! command -v python3 &>/dev/null; then
+        echo "  ✗ $name — python3 required but not found"
+        exit 1
+    fi
+
+    python3 - "$src" "$tgt" "$claude_dir" <<'PYTHON'
+import json, sys
+
+src_path, tgt_path, claude_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+
+with open(src_path) as f:
+    content = f.read()
+
+# Replace $CLAUDE_HOME with the target environment's absolute path
+content = content.replace('$CLAUDE_HOME', claude_dir)
+
+with open(tgt_path, 'w') as f:
+    f.write(content)
+PYTHON
+    echo "  ✓ $name (paths expanded)"
+}
+
+# merge_plugin_json <src> <tgt> <direction> <claude_dir>
+# Deep-merges JSON with path transformation based on direction
+merge_plugin_json() {
+    local src="$1" tgt="$2" direction="$3" claude_dir="$4" name
+    name="$(basename "$tgt")"
+
+    if [ ! -f "$src" ]; then
+        echo "  ⊘ $name — source missing, skipped"
+        return
+    fi
+
+    if ! command -v python3 &>/dev/null; then
+        echo "  ✗ $name — python3 required but not found"
+        exit 1
+    fi
+
+    # If target doesn't exist, just transform and copy
+    if [ ! -f "$tgt" ]; then
+        if [ "$direction" = "from" ]; then
+            parameterize_plugin_paths "$src" "$tgt" "$claude_dir"
+        else
+            expand_plugin_paths "$src" "$tgt" "$claude_dir"
+        fi
+        return
+    fi
+
+    python3 - "$src" "$tgt" "$direction" "$claude_dir" <<'PYTHON'
+import json, sys
+
+def deep_merge(base, overlay):
+    """Return base with missing keys filled in from overlay."""
+    result = dict(base)
+    for key, val in overlay.items():
+        if key not in result:
+            result[key] = val
+        elif isinstance(result[key], dict) and isinstance(val, dict):
+            result[key] = deep_merge(result[key], val)
+    return result
+
+src_path, tgt_path, direction, claude_dir = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+
+with open(src_path) as f:
+    src_content = f.read()
+with open(tgt_path) as f:
+    tgt_content = f.read()
+
+# Transform source paths based on direction
+if direction == 'from':
+    # Parameterize: replace absolute paths with $CLAUDE_HOME
+    src_content = src_content.replace(claude_dir, '$CLAUDE_HOME')
+else:
+    # Expand: replace $CLAUDE_HOME with absolute paths
+    src_content = src_content.replace('$CLAUDE_HOME', claude_dir)
+
+source = json.loads(src_content)
+target = json.loads(tgt_content)
+
+merged = deep_merge(target, source)
+
+with open(tgt_path, 'w') as f:
+    json.dump(merged, f, indent=2)
+    f.write('\n')
+PYTHON
+    echo "  ✓ $name (merged)"
+}
+
 # ---------------------------------------------------------------------------
 # Main sync loop
 # ---------------------------------------------------------------------------
@@ -209,7 +376,7 @@ echo ""
 # --- Directories ---
 for item in "${MANAGED_DIRS[@]}"; do
     if [ "$STRATEGY" = "overwrite" ]; then
-        sync_directory_overwrite "$SRC/$item" "$TGT/$item"
+        sync_directory_overwrite "$SRC/$item" "$TGT/$item" "$item"
     else
         sync_directory_merge "$SRC/$item" "$TGT/$item"
     fi
@@ -230,7 +397,7 @@ for item in "${MANAGED_FILES[@]}"; do
             rm -f "$tgt_path"
             echo "  ↳ removed legacy symlink"
         elif [ -e "$tgt_path" ] || [ -L "$tgt_path" ]; then
-            backup_target "$tgt_path"
+            backup_target "$tgt_path" "$item"
         fi
 
         cp "$src_path" "$tgt_path"
@@ -250,7 +417,7 @@ mkdir -p "$PLUGIN_TGT"
 echo ""
 echo "Plugin state:"
 
-# --- Plugin state files ---
+# --- Plugin state files (with path transformation) ---
 for item in "${PLUGIN_STATE_FILES[@]}"; do
     src_path="$PLUGIN_SRC/$item"
     tgt_path="$PLUGIN_TGT/$item"
@@ -265,13 +432,20 @@ for item in "${PLUGIN_STATE_FILES[@]}"; do
             rm -f "$tgt_path"
             echo "  ↳ removed legacy symlink"
         elif [ -e "$tgt_path" ] || [ -L "$tgt_path" ]; then
-            backup_target "$tgt_path"
+            backup_target "$tgt_path" "plugins/$item"
         fi
 
-        cp "$src_path" "$tgt_path"
-        echo "  ✓ $item"
+        # Transform paths based on sync direction
+        if [ "$DIRECTION" = "from" ]; then
+            # from ~/.claude to repo: parameterize paths
+            parameterize_plugin_paths "$src_path" "$tgt_path" "$CLAUDE_DIR"
+        else
+            # to ~/.claude from repo: expand paths
+            expand_plugin_paths "$src_path" "$tgt_path" "$CLAUDE_DIR"
+        fi
     else
-        merge_json "$src_path" "$tgt_path"
+        # Merge mode: use merge_plugin_json with path transformation
+        merge_plugin_json "$src_path" "$tgt_path" "$DIRECTION" "$CLAUDE_DIR"
     fi
 done
 
