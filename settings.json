@@ -8,5 +8,6 @@
     "playwright@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "document-skills@anthropic-agent-skills": true
-  }
+  },
+  "model": "sonnet"
 }
