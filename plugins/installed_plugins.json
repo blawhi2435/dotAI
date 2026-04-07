@@ -4,30 +4,30 @@
     "context7@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/context7/27d2b86d72da",
-        "version": "27d2b86d72da",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/context7/unknown",
+        "version": "unknown",
         "installedAt": "2026-02-01T10:30:48.177Z",
-        "lastUpdated": "2026-02-01T10:30:48.177Z",
+        "lastUpdated": "2026-04-07T05:39:52.155Z",
         "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
       }
     ],
     "frontend-design@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/frontend-design/27d2b86d72da",
-        "version": "27d2b86d72da",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/frontend-design/unknown",
+        "version": "unknown",
         "installedAt": "2026-02-01T10:31:01.711Z",
-        "lastUpdated": "2026-02-01T10:31:01.711Z",
+        "lastUpdated": "2026-04-07T05:39:52.156Z",
         "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
       }
     ],
     "ralph-loop@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/ralph-loop/27d2b86d72da",
-        "version": "27d2b86d72da",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/ralph-loop/1.0.0",
+        "version": "1.0.0",
         "installedAt": "2026-02-01T10:31:13.703Z",
-        "lastUpdated": "2026-02-01T10:31:13.703Z",
+        "lastUpdated": "2026-04-07T05:39:52.156Z",
         "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
       }
     ],
@@ -44,30 +44,30 @@
     "serena@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/serena/27d2b86d72da",
-        "version": "27d2b86d72da",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/serena/unknown",
+        "version": "unknown",
         "installedAt": "2026-02-01T10:31:39.662Z",
-        "lastUpdated": "2026-02-01T10:31:39.662Z",
+        "lastUpdated": "2026-04-07T05:39:52.154Z",
         "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
       }
     ],
     "playwright@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/playwright/27d2b86d72da",
-        "version": "27d2b86d72da",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/playwright/unknown",
+        "version": "unknown",
         "installedAt": "2026-02-01T10:31:44.769Z",
-        "lastUpdated": "2026-02-01T10:31:44.769Z",
+        "lastUpdated": "2026-04-07T05:39:52.155Z",
         "gitCommitSha": "27d2b86d72da27c64585150857cee8472ad47abb"
       }
     ],
     "superpowers@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/superpowers/4.1.1",
-        "version": "4.1.1",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/superpowers/5.0.7",
+        "version": "5.0.7",
         "installedAt": "2026-02-01T10:31:55.093Z",
-        "lastUpdated": "2026-02-01T10:31:55.093Z",
+        "lastUpdated": "2026-04-07T05:39:53.479Z",
         "gitCommitSha": "06b92f36820f38175b2ed6ff3f8df45157d54731"
       }
     ],
@@ -79,6 +79,26 @@
         "installedAt": "2026-02-01T10:32:52.007Z",
         "lastUpdated": "2026-02-01T10:32:52.007Z",
         "gitCommitSha": "69c0b1a0674149f27b61b2635f935524b6add202"
+      }
+    ],
+    "example-skills@anthropic-agent-skills": [
+      {
+        "scope": "user",
+        "installPath": "$CLAUDE_HOME/plugins/cache/anthropic-agent-skills/example-skills/1ed29a03dc85",
+        "version": "1ed29a03dc85",
+        "installedAt": "2026-02-15T12:33:05.759Z",
+        "lastUpdated": "2026-02-15T12:33:05.759Z",
+        "gitCommitSha": "1ed29a03dc852d30fa6ef2ca53a67dc2c2c2c563"
+      }
+    ],
+    "gopls-lsp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "$CLAUDE_HOME/plugins/cache/claude-plugins-official/gopls-lsp/1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-02-16T08:32:05.621Z",
+        "lastUpdated": "2026-02-16T08:32:05.621Z",
+        "gitCommitSha": "2cd88e7947b7382e045666abee790c7f55f669f3"
       }
     ]
   }
