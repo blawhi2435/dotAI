@@ -122,6 +122,32 @@ For complete guidelines including:
 
 Read: `references/coding-standards.md`
 
+## Go Clean Architecture (Layered API Servers)
+
+When implementing handler → service → repository layers:
+
+### Data passing between layers
+
+- **Use `domain` structs** for any structured data crossing layer boundaries. Never create custom input/output structs (e.g. `CreateXxxInput`, `ListXxxInput`) in the service or handler layer. If a struct is needed, use or extend a type in `common/domain/`.
+- **Simple scalars are fine** — IDs, names, status strings can be passed as individual function arguments.
+- **No custom filter structs** — filter fields (e.g. `nodeID`, `name`, `status`) are passed as separate primitives alongside pagination params. Never bundle them into a one-off `XxxListFilter` struct in the interfaces or service layer.
+
+### Pagination
+
+- Always use the project's shared pagination type (e.g. `params.ListQueryParams`) — never pass `limit`/`offset` as loose `int` arguments across layers.
+- Viewmodel request structs must implement a `ToListQueryParams()` converter method.
+- Handler calls `request.ToListQueryParams()` and passes the result down to service → repository unchanged.
+
+### Reference pattern (list API)
+
+```
+Handler:    h.Service.ListXxx(ctx, filterField string, request.ToListQueryParams())
+Service:    s.XxxRepository.ListXxx(ctx, filterField string, queryParams)
+Repository: func ListXxx(ctx, filterField string, queryParams params.ListQueryParams)
+```
+
+Before coding a new list endpoint, read an existing one (e.g. `QueryUsers`, `QueryGroups`) to confirm the exact pattern used in the project.
+
 ## When in Doubt
 
 1. **Simplicity wins** - Choose the clearer solution
